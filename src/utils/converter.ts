@@ -1,6 +1,9 @@
+import { DocumentReference } from "../client"
 import {
   FirestoreDocument,
   FirestoreFieldValue,
+  FirestoreLiteralDocumentReference,
+  FirestoreLiteralGeoPointValue,
   FirestoreResponse,
 } from "../types";
 import { getDocumentId } from "./path";
@@ -11,8 +14,12 @@ import { getDocumentId } from "./path";
  * @returns Firestore形式の値
  */
 export function convertToFirestoreValue(value: any): FirestoreFieldValue {
+  // store in temporary variable to enable TypeScript to be more thorough
+  let unknown: unknown = value;
   if (value instanceof Date) {
     return { timestampValue: value.toISOString() };
+  } else if (value instanceof DocumentReference) {
+    return { referenceValue: value['client']['pathUtil'].getParentReference(value.path) } satisfies FirestoreLiteralDocumentReference;
   } else if (typeof value === "string") {
     return { stringValue: value };
   } else if (typeof value === "number") {
@@ -30,6 +37,35 @@ export function convertToFirestoreValue(value: any): FirestoreFieldValue {
       },
     };
   } else if (typeof value === "object") {
+
+    // Check for "special" shapes
+    // Check that value matches exact shape of Document Reference
+    if (
+      typeof unknown === 'object'
+      && !!unknown && 'referenceValue' in unknown
+      && Object.keys(unknown).length === 1
+      && typeof unknown.referenceValue === 'string'
+    ) {
+      // value is an not-null object like `{ referenceValue: string }` with exactly 1 property, and that 1 property is a string
+      return { referenceValue: unknown.referenceValue } satisfies FirestoreLiteralDocumentReference
+    }
+    // Check that value matches exact shape of GeoPoint
+    else if (
+      typeof unknown === 'object'
+      && !!unknown
+      && 'geoPointValue' in unknown
+      && Object.keys(unknown).length === 1
+      && typeof unknown.geoPointValue === 'object'
+      && !!unknown.geoPointValue
+      && 'latitude' in unknown.geoPointValue
+      && 'longitude' in unknown.geoPointValue
+      && Object.keys(unknown.geoPointValue).length === 1
+      && typeof unknown.geoPointValue.latitude === 'number'
+      && typeof unknown.geoPointValue.longitude === 'number'
+    ) {
+      return { geoPointValue: { latitude: unknown.geoPointValue.latitude, longitude: unknown.geoPointValue.longitude }} satisfies FirestoreLiteralGeoPointValue
+    }
+
     const fields = Object.entries(value).reduce(
       (acc, [key, val]) => ({
         ...acc,
@@ -64,6 +100,10 @@ export function convertFromFirestoreValue(
     return null;
   } else if ("timestampValue" in firestoreValue) {
     return new Date(firestoreValue.timestampValue);
+  } else if ("geoPointValue" in firestoreValue) {
+    return firestoreValue satisfies FirestoreLiteralGeoPointValue
+  } else if ("referenceValue" in firestoreValue) {
+    return firestoreValue satisfies FirestoreLiteralDocumentReference
   } else if ("mapValue" in firestoreValue && firestoreValue.mapValue.fields) {
     return Object.entries(firestoreValue.mapValue.fields).reduce(
       (acc, [key, val]) => ({
