@@ -87,11 +87,8 @@ export function convertFromFirestoreValue(
       }),
       {}
     );
-  } else if (
-    "arrayValue" in firestoreValue &&
-    firestoreValue.arrayValue.values
-  ) {
-    return firestoreValue.arrayValue.values.map(convertFromFirestoreValue);
+  } else if ("arrayValue" in firestoreValue) {
+    return (firestoreValue.arrayValue.values ?? []).map(convertFromFirestoreValue);
   }
 
   return null;
