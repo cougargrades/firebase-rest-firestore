@@ -5,7 +5,7 @@ on:
     branches:
       - main
   workflow_dispatch:
-    inputs: []
+    inputs: 
 
 # GitHub Actionsの権限設定
 permissions:
