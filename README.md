@@ -1,3 +1,6 @@
+
+![NPM Version](https://img.shields.io/npm/v/%40cougargrades%2Ffirebase-rest-firestore)
+
 # Firebase REST Firestore
 
 [日本語版はこちら(Japanese Version)](./README.ja.md)
