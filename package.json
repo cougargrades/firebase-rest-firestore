@@ -56,10 +56,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nabettu/firebase-rest-firestore.git"
+    "url": "git+https://github.com/cougargrades/firebase-rest-firestore.git"
   },
   "bugs": {
-    "url": "https://github.com/nabettu/firebase-rest-firestore/issues"
+    "url": "https://github.com/cougargrades/firebase-rest-firestore/issues"
   },
-  "homepage": "https://github.com/nabettu/firebase-rest-firestore#readme"
+  "homepage": "https://github.com/cougargrades/firebase-rest-firestore#readme"
 }
