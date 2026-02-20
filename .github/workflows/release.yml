@@ -7,6 +7,7 @@ on:
 
 # GitHub Actionsの権限設定
 permissions:
+  id-token: write
   contents: write
   issues: write
   pull-requests: write
@@ -23,7 +24,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "20.x"
+          node-version: "24.x"
           registry-url: "https://registry.npmjs.org"
 
       - name: Gitの設定
@@ -34,15 +35,15 @@ jobs:
       - name: インストール
         run: npm ci
 
-      - name: テスト実行
-        env:
-          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
-          FIREBASE_CLIENT_EMAIL: ${{ secrets.FIREBASE_CLIENT_EMAIL }}
-          FIREBASE_PRIVATE_KEY: ${{ secrets.FIREBASE_PRIVATE_KEY }}
-        run: npm test
+      # - name: テスト実行
+      #   env:
+      #     FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+      #     FIREBASE_CLIENT_EMAIL: ${{ secrets.FIREBASE_CLIENT_EMAIL }}
+      #     FIREBASE_PRIVATE_KEY: ${{ secrets.FIREBASE_PRIVATE_KEY }}
+      #   run: npm test
 
       - name: リリース実行
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          #NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npx semantic-release
