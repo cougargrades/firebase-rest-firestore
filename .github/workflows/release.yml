@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs: []
 
 # GitHub Actionsの権限設定
 permissions:
@@ -45,5 +47,5 @@ jobs:
       - name: リリース実行
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          #NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npx semantic-release
